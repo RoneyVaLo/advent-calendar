@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Heart,
   Gift,
@@ -159,7 +159,41 @@ const activities = [
 ];
 
 function CalendarioDeAdvientoNavideno() {
-  const [diaAbierto, setDiaAbierto] = useState(null);
+  const [hearts, setHearts] = useState([]);
+
+  // Function to generate hearts that cover entire viewport
+  const generateHearts = () => {
+    // Determine the number of hearts based on viewport size
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    // Calculate number of hearts proportional to screen size
+    const heartCount = Math.floor((viewportWidth * viewportHeight) / 10000);
+
+    const newHearts = Array.from({ length: heartCount }, (_, i) => ({
+      id: i,
+      left: `${Math.random() * 100}%`,
+      top: `-${Math.random() * 20}%`,
+      size: `${Math.random() * 20 + 10}px`,
+      animationDuration: `${Math.random() * 3 + 2}s`,
+      animationDelay: `${Math.random() * 2}s`,
+    }));
+
+    setHearts(newHearts);
+  };
+
+  // Generate hearts on mount and resize
+  useEffect(() => {
+    generateHearts();
+
+    // Regenerate hearts on window resize
+    window.addEventListener("resize", generateHearts);
+
+    // Cleanup event listener
+    return () => {
+      window.removeEventListener("resize", generateHearts);
+    };
+  }, []);
 
   // Function to check if a day is accessible
   const isDayAccessible = (dayNumber) => {
@@ -183,23 +217,24 @@ function CalendarioDeAdvientoNavideno() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-100 to-rose-200 p-8 relative overflow-hidden">
-      <div className="absolute inset-0 z-0">
-        {[...Array(50)].map((_, i) => (
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        {hearts.map((heart) => (
           <div
-            key={i}
+            key={heart.id}
             className="absolute animate-fall text-rose-300 opacity-70"
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `-${Math.random() * 10}%`,
-              fontSize: `${Math.random() * 20 + 10}px`,
-              animationDuration: `${Math.random() * 3 + 2}s`,
-              animationDelay: `${Math.random() * 2}s`,
+              left: heart.left,
+              top: heart.top,
+              fontSize: heart.size,
+              animationDuration: heart.animationDuration,
+              animationDelay: heart.animationDelay,
             }}
           >
             ❤
           </div>
         ))}
       </div>
+
       <div className="max-w-4xl mx-auto z-10 relative">
         <header className="text-center mb-8">
           <h1 className="text-4xl font-bold text-rose-700 mb-2">
