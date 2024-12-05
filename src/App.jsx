@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Analytics } from "@vercel/analytics/react";
 import {
   Heart,
   Gift,
@@ -308,6 +309,7 @@ function CalendarioDeAdvientoNavideno() {
           })}
         </div>
       </div>
+      <Analytics />
     </div>
   );
 }
