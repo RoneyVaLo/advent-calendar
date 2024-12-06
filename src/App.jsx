@@ -161,6 +161,23 @@ const activities = [
 
 function CalendarioDeAdvientoNavideno() {
   const [hearts, setHearts] = useState([]);
+  const [openDays, setOpenDays] = useState(() => {
+    // Initialize from localStorage, or empty array if not exists
+    const savedOpenDays = localStorage.getItem("adventCalendarOpenDays");
+    return savedOpenDays ? JSON.parse(savedOpenDays) : [];
+  });
+
+  // Save open days to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("adventCalendarOpenDays", JSON.stringify(openDays));
+  }, [openDays]);
+
+  // Function to mark a day as opened
+  const markDayAsOpened = (day) => {
+    if (!openDays.includes(day)) {
+      setOpenDays([...openDays, day]);
+    }
+  };
 
   // Function to generate hearts that cover entire viewport
   const generateHearts = () => {
@@ -259,10 +276,26 @@ function CalendarioDeAdvientoNavideno() {
                 title={!isAccessible ? "Este día aún no está disponible" : ""}
               >
                 {isAccessible ? (
-                  <Dialog>
+                  <Dialog
+                    onOpenChange={(open) => {
+                      if (open) {
+                        markDayAsOpened(day);
+                      }
+                    }}
+                  >
                     <DialogTrigger asChild>
                       <Card
-                        className={`${activity.bgColor} hover:bg-white transition-colors cursor-pointer border-2 border-rose-200 hover:border-rose-400 overflow-hidden`}
+                        className={`
+                          ${activity.bgColor} 
+                          hover:bg-white 
+                          transition-colors 
+                          cursor-pointer 
+                          border-2 
+                          border-rose-200 
+                          hover:border-rose-400 
+                          overflow-hidden
+                          ${openDays.includes(day) ? 'shadow-xl border-b-8 border-b-slate-400 opacity-50' : ''}
+                        `}
                       >
                         <CardContent className="p-4 flex flex-col items-center justify-center h-32 relative">
                           <span className="text-2xl font-bold text-rose-600 mb-2 z-10">

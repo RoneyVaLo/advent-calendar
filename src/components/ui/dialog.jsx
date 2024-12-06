@@ -1,4 +1,4 @@
-import React, { useState, createContext, useContext } from "react";
+import React, { useState, createContext, useContext, useEffect } from "react";
 
 // Dialog Context
 const DialogContext = createContext({
@@ -7,8 +7,15 @@ const DialogContext = createContext({
 });
 
 // Dialog Component
-export function Dialog({ children, ...props }) {
+export function Dialog({ children, onOpenChange, ...props }) {
   const [open, setOpen] = useState(false);
+
+  // Añade un useEffect para manejar el onOpenChange
+  useEffect(() => {
+    if (open && onOpenChange) {
+      onOpenChange(true);
+    }
+  }, [open, onOpenChange]);
 
   return (
     <DialogContext.Provider value={{ open, setOpen }}>
